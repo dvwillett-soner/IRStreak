@@ -2,459 +2,97 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IRStreak - Comprehensive 7-Section ICIR Academy</title>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <title>IRStreak Academy</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-main: #2b2b2b;
-            --text-muted: #666666;
-            --duo-blue: #1cb0f6;
-            --duo-green: #58cc02;
-            --duo-orange: #ff9600;
-            --duo-red: #ea2b2b;
-            --border-color: #e5e5e5;
-            --border-width: 2px;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', 'Segoe UI', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 90px; }
-        header { background-color: var(--card-bg); border-bottom: var(--border-width) solid var(--border-color); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .logo-area { display: flex; align-items: center; gap: 10px; font-size: 1.5rem; font-weight: 800; color: var(--duo-blue); }
-        .stats-banner { display: flex; align-items: center; gap: 20px; font-weight: 700; }
-        .stat-badge { display: flex; align-items: center; gap: 6px; }
-        .stat-badge.streak { color: var(--duo-orange); }
-        .stat-badge.xp { color: var(--duo-blue); }
-        .auth-status-zone { display: flex; align-items: center; gap: 10px; border-left: 2px solid var(--border-color); padding-left: 15px; }
-        .container { max-width: 1000px; width: 100%; margin: 30px auto; padding: 0 20px; flex-grow: 1; }
+        body { font-family: sans-serif; background: #f4f7f6; padding: 40px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .module-card { border: 2px solid #e5e5e5; padding: 20px; margin: 10px 0; border-radius: 8px; cursor: pointer; }
+        .module-card:hover { border-color: #1cb0f6; }
         .screen { display: none; }
         .screen.active { display: block; }
-        .dashboard-header { text-align: center; margin-bottom: 30px; }
-        .dashboard-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; }
-        .dashboard-subtitle { font-size: 1.1rem; color: var(--text-muted); }
-        .module-group { margin-bottom: 40px; background: var(--card-bg); border: var(--border-width) solid var(--border-color); border-radius: 16px; padding: 20px; }
-        .section-heading { font-size: 1.4rem; font-weight: 800; color: #111; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .module-card { border-left: 4px solid var(--duo-blue); background: #fafafa; padding: 20px; margin-bottom: 15px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
-        .module-card:hover { background: #f0f7ff; }
-        .module-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 5px; color: #111; }
-        .module-desc { font-size: 0.95rem; color: var(--text-muted); }
-        .lesson-container { background: var(--card-bg); border: var(--border-width) solid var(--border-color); border-radius: 24px; padding: 40px; min-height: 550px; display: flex; flex-direction: column; justify-content: space-between; }
-        .lesson-nav { display: flex; align-items: center; gap: 20px; margin-bottom: 30px; }
-        .exit-btn { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; }
-        .lesson-progress-bg { flex-grow: 1; height: 16px; background: #e5e5e5; border-radius: 20px; overflow: hidden; }
-        .lesson-progress-fill { height: 100%; background: var(--duo-blue); width: 0%; transition: width 0.3s ease; }
-        .content-pane { font-size: 1.15rem; line-height: 1.65; color: #333; flex-grow: 1; overflow-y: auto; margin-bottom: 30px; }
-        .content-pane h2 { font-size: 1.7rem; font-weight: 800; margin-bottom: 20px; color: #111; }
-        .content-pane h3 { font-size: 1.3rem; font-weight: 700; margin-top: 25px; margin-bottom: 12px; color: #222; }
-        .content-pane p { margin-bottom: 15px; }
-        .content-pane ul { margin-left: 25px; margin-bottom: 20px; }
-        .content-pane li { margin-bottom: 8px; }
-        .options-stack { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
-        .option-item { border: var(--border-width) solid var(--border-color); border-bottom: 4px solid var(--border-color); border-radius: 14px; padding: 18px 24px; font-size: 1.1rem; font-weight: 600; text-align: left; background: white; cursor: pointer; width: 100%; }
-        .option-item.selected { background-color: #ddf4ff; border-color: var(--duo-blue); color: #186590; }
-        .tray-feedback { border-radius: 16px; padding: 20px; margin-top: 25px; display: none; gap: 15px; font-size: 1.1rem; }
-        .tray-feedback.correct { display: flex; background: #d7ffb8; color: #257e0a; border: 2px solid #b8f28a; }
-        .tray-feedback.incorrect { display: flex; background: #ffdfe0; color: #ea2b2b; border: 2px solid #ffb8b8; }
-        .footer-action-row { display: flex; justify-content: flex-end; margin-top: 25px; border-top: var(--border-width) solid var(--border-color); padding-top: 20px; }
-        .footer-btn { background-color: var(--duo-blue); color: white; border: none; border-bottom: 4px solid rgba(0,0,0,0.2); padding: 16px 32px; border-radius: 16px; font-size: 1.1rem; font-weight: 700; cursor: pointer; text-transform: uppercase; }
-        .global-status-dock { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); border-top: var(--border-width) solid var(--border-color); padding: 15px 40px; display: flex; align-items: center; justify-content: space-between; z-index: 99; }
-        .global-progress-dock-wrapper { width: 55%; display: flex; align-items: center; gap: 15px; }
-        .global-dock-bar { flex-grow: 1; height: 14px; background: #e5e5e5; border-radius: 10px; overflow: hidden; }
-        .global-dock-fill { height: 100%; background: linear-gradient(90deg, #1cb0f6, #58cc02); width: 0%; transition: width 0.5s ease; }
-        .auth-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
-        .auth-modal.active { display: flex; }
-        .auth-card { background: white; padding: 40px; border-radius: 24px; width: 100%; max-width: 440px; text-align: center; border: var(--border-width) solid var(--border-color); }
-        .logout-btn { background: none; border: 1px solid var(--border-color); padding: 5px 12px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.85rem; }
+        .footer-btn { background: #1cb0f6; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
-
-    <header>
-        <div class="logo-area"><i class="fa-solid fa-graduation-cap"></i> <span>IRStreak Academy</span></div>
-        <div class="stats-banner">
-            <div class="stat-badge streak"><i class="fa-solid fa-fire"></i> <span id="streak-val">1</span> Day</div>
-            <div class="stat-badge xp"><i class="fa-solid fa-bolt"></i> <span id="xp-val">0</span> XP</div>
-            <div class="auth-status-zone" id="auth-header-wrapper"></div>
-        </div>
-    </header>
-
     <div class="container">
         <div id="dashboard-screen" class="screen active">
-            <div class="dashboard-header">
-                <h2 class="dashboard-title">International Certificate in Investor Relations (ICIR)</h2>
-                <p class="dashboard-subtitle" id="sync-status-indicator">Loading comprehensive study program...</p>
-            </div>
+            <h1>ICIR Study Academy</h1>
+            <p id="status">Loading syllabus from database...</p>
             <div id="curriculum-tree-root"></div>
         </div>
-
         <div id="lesson-screen" class="screen">
-            <div class="lesson-container">
-                <div>
-                    <div class="lesson-nav">
-                        <button class="exit-btn" onclick="exitActiveRuntime()"><i class="fa-solid fa-xmark"></i></button>
-                        <div class="lesson-progress-bg"><div id="runtime-progress-bar" class="lesson-progress-fill"></div></div>
-                    </div>
-                    <div id="runtime-content-pane" class="content-pane"></div>
-                </div>
-                <div>
-                    <div id="tray-feedback-box" class="tray-feedback"></div>
-                    <div class="footer-action-row">
-                        <button id="runtime-action-btn" class="footer-btn" onclick="handleStepTransition()">Check Answer</button>
-                    </div>
-                </div>
-            </div>
+            <div id="runtime-content-pane"></div>
+            <button class="footer-btn" id="runtime-action-btn" onclick="handleStepTransition()">Continue</button>
         </div>
-    </div>
-
-    <div id="auth-modal-screen" class="auth-modal">
-        <div class="auth-card">
-            <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: var(--duo-blue); margin-bottom: 15px;"></i>
-            <h3>D1 Cloud Profile Synchronization</h3>
-            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">Sign in to securely backup your 40-hour study milestones directly to your cloud database.</p>
-            <div style="display: flex; justify-content: center; margin-bottom: 20px;"><div id="google-signin-btn-target"></div></div>
-            <button class="inline-link-btn" style="background:#ccc;" onclick="closeAuthPortal()">Continue as Guest</button>
-        </div>
-    </div>
-
-    <div class="global-status-dock">
-        <div class="global-meta"><span>Curriculum Mastery Track</span><br><strong id="global-percentage-label">0% Complete</strong></div>
-        <div class="global-progress-dock-wrapper">
-            <div class="global-dock-bar"><div id="global-progress-bar-fill" class="global-dock-fill"></div></div>
-        </div>
-        <div style="font-weight: 800; color: var(--duo-green); font-size: 1.1rem;"><i class="fa-solid fa-trophy"></i> Certified</div>
     </div>
 
     <script>
-        const ICIR_CURRICULUM_DATABASE = [
-            {
-                section: "Section 1",
-                title: "Introduction to Investor Relations",
-                modules: [
-                    {
-                        id: "s1_m1",
-                        title: "1.1 Mandate & Purpose of the IR Function",
-                        desc: "Competition for capital, managing volatility, establishing fair asset valuation, and time optimization.",
-                        steps: [
-                            { type: "text", title: "The Strategic Imperative of IR", html: "<p>Listed companies operate in a highly competitive market for capital allocation. The primary mandate of the IR function is to ensure the company's equity story is communicated clearly to secure a fair market valuation.</p><h3>Core IR Focus Areas:</h3><ul><li><strong>Fair Valuation Management:</strong> Minimizing valuation gaps resulting from market information symmetry blockages.</li><li><strong>Time Management:</strong> Actively managing the schedules of the CEO and CFO to target high-conviction institutional holders.</li><li><strong>Capital Cost Controls:</strong> Building a stable long-term investor base to lower volatility and cost of capital during subsequent capital raisings.</li></ul>" },
-                            { type: "mcq", prompt: "What is the primary operational mandate of an executive corporate Investor Relations function?", options: ["Articulating a clear equity thesis to establish fair valuation and manage market volatility.", "Artificially maintaining high bid prices across global secondary trading desks.", "Exempting corporate legal teams from mandatory quarterly disclosure updates."], answer: "Articulating a clear equity thesis to establish fair valuation and manage market volatility.", explain: "The primary purpose of an IR function is to ensure the market can accurately value the company through transparent, bidirectional communication." }
-                        ]
-                    },
-                    {
-                        id: "s1_m2",
-                        title: "1.2 The 5 Cs of IR Communications",
-                        desc: "Deep walkthrough of the core operational tenets governing best-practice corporate communication.",
-                        steps: [
-                            { type: "text", title: "Implementing the 5 Cs Framework", html: "<p>Best practice investor relations is built on five core pillars that ensure institutional trust through up and down economic cycles.</p><h3>The Framework Structure:</h3><ul><li><strong>Commitment:</strong> Full strategic buy-in from senior leadership, specifically the CEO and CFO.</li><li><strong>Consistency:</strong> Maintaining regular updates and access in all market conditions.</li><li><strong>Clarity:</strong> Providing clear and concise key metrics.</li><li><strong>Credibility:</strong> Demonstrating deep industry expertise as an authoritative voice.</li><li><strong>Conduit:</strong> Functioning as a secure, two-way information network.</li></ul>" },
-                            { type: "mcq", prompt: "Which of the 5 Cs explicitly mandates that the IRO acts as a bidirectional channel between the market and the board?", options: ["Credibility", "Conduit", "Commitment"], answer: "Conduit", explain: "The Conduit principle requires IR to manage the two-way information flow between the company and its investors, rather than acting as a barrier." }
-                        ]
-                    }
-                ]
-            },
-            {
-                section: "Section 2",
-                title: "Financial Markets",
-                modules: [
-                    {
-                        id: "s2_m1",
-                        title: "2.1 Primary vs Secondary Market Execution Architecture",
-                        desc: "Deconstructing the transaction lifecycle: execution, clearing, electronic settlement, and venue structures.",
-                        steps: [
-                            { type: "text", title: "Market Lifecycles & Infrastructures", html: "<p>Primary markets provide issuers with direct capital injection channels, whereas secondary markets facilitate subsequent liquidity discovery between market participants.</p><h3>The Three Stages of a Trade:</h3><ul><li><strong>Execution:</strong> The binding agreement of price and volume parameters between buyer and seller.</li><li><strong>Clearing:</strong> Trade reconciliation and risk management handled by a central counterparty.</li><li><strong>Settlement:</strong> The final exchange of cash for legal title, standardizing on a T+2 horizon.</li></ul>" },
-                            { type: "mcq", prompt: "What is the standard electronic settlement window for public equity transactions across major global stock exchanges?", options: ["T+1", "T+2", "T+5"], answer: "T+2", explain: "Transactions are finalized on a Trade Date plus 2 Business Days (T+2) cycle." }
-                    }
-                ]
-            },
-            {
-                section: "Section 3",
-                title: "Corporate Entities and Governance",
-                modules: [
-                    {
-                        id: "s3_m1",
-                        title: "3.1 Statutory Company Models & Shareholder Rights",
-                        desc: "PLCs vs Private Ltd structures, share capital parameters, pre-emption updates, and shareholder unmasking tools.",
-                        steps: [
-                            { type: "text", title: "The Legal Framework of the Corporation", html: "<p>A Public Limited Company (PLC) requires a minimum share capital of £50,000, at least two directors, and a qualified company secretary to list publicly.</p><h3>Beneficial Owner Tracking:</h3><p>Under Section 793 of the Companies Act 2006, public companies have the power to look past multi-layered nominee accounts to discover ultimate beneficial owners. Shareholders who fail to comply face voting restrictions and frozen dividend distributions.</p>" },
-                            { type: "mcq", prompt: "What legal power enables a public company to look past multi-layered nominee structures to identify ultimate beneficial owners?", options: ["Section 793 of the Companies Act 2006", "Article 19 of the Market Abuse Regulation", "The MiFID II transparency framework"], answer: "Section 793 of the Companies Act 2006", explain: "Section 793 gives UK public companies the power to demand identity details from anyone holding voting rights in their stock." }
-                        ]
-                    }
-                ]
-            },
-            {
-                section: "Section 4",
-                title: "Market Conduct",
-                modules: [
-                    {
-                        id: "s4_m1",
-                        title: "4.1 The Regulatory Enforcement Matrix & Inside Information",
-                        desc: "Deconstructing the definitions of price-sensitive inside information, closed periods, and major thresholds.",
-                        steps: [
-                            { type: "text", title: "Navigating Inside Information Rules", html: "<p>Inside information is legally defined by four conditions: it must be precise, non-public, related to the issuer, and likely to have a significant effect on the share price if released.</p><h3>Strict Close Periods:</h3><p>Article 19(11) of the Market Abuse Regulation enforces a strict 30-day closed period prior to half-year or full-year earnings releases, during which insiders are blocked from trading.</p>" },
-                            { type: "mcq", prompt: "Under what conditions can a corporate issuer delay the public disclosure of inside information?", options: ["Only if immediate disclosure would prejudice its legitimate interests, the delay wouldn't mislead the public, and confidentiality can be guaranteed.", "Whenever immediate disclosure might cause a share price correction of more than 5%.", "If senior leadership requires additional time to structure consensus expectations."], answer: "Only if immediate disclosure would prejudice its legitimate interests, the delay wouldn't mislead the public, and confidentiality can be guaranteed.", explain: "Delaying disclosure is highly restricted and requires satisfying all three requirements to ensure market integrity." }
-                        ]
-                    }
-                ]
-            },
-            {
-                section: "Section 5",
-                title: "Reporting",
-                modules: [
-                    {
-                        id: "s5_m1",
-                        title: "5.1 Periodic Reports & Reporting Formats",
-                        desc: "Timeline demands, Strategic Report disclosures, ESEF digital tagging formats, and ISSB sustainability standards.",
-                        steps: [
-                            { type: "text", title: "The Corporate Reporting Matrix", html: "<p>Listed companies operate on a structured disclosure calendar, delivering mandatory half-year and preliminary annual financial reviews.</p><h3>Key Structural Requirements:</h3><ul><li><strong>Strategic Report:</strong> A forward-looking document outlining the business model, KPIs, and principal risk exposures.</li><li><strong>ESEF Tagging:</strong> Reports must use inline XBRL tags to allow automated parsing by analysts.</li><li><strong>ISSB Guidelines:</strong> Implementing IFRS S1 and S2 parameters to provide a global baseline for sustainability reporting.</li></ul>" },
-                            { type: "mcq", prompt: "What digital formatting framework is mandatory for annual financial statements to enable automated parsing by analysts?", options: ["Inline XBRL under ESEF guidelines", "Standard text files via FTP nodes", "Encrypted PDF records"], answer: "Inline XBRL under ESEF guidelines", explain: "European and UK listing rules require inline XBRL digital tagging within XHTML files under ESEF specifications." }
-                        ]
-                    }
-                ]
-            },
-            {
-                section: "Section 6",
-                title: "Accounting, Valuation and Investment Principles",
-                modules: [
-                    {
-                        id: "s6_m1",
-                        title: "6.1 Financial Statements, Key Ratios & Corporate Valuation",
-                        desc: "Balance Sheet tracking, cash flow dynamics, profit vs cash, liquidity metrics, WACC hurdles, and CAPM mechanics.",
-                        steps: [
-                            { type: "text", title: "The Fundamentals of Financial Analysis", html: "<p>Financial statements provide the data required to calculate corporate health, using matching and accrual conventions that separate accounting profit from cash generation.</p><h3>Essential Calculation Tools:</h3><ul><li><strong>Current Ratio:</strong> Current Assets divided by Current Liabilities, tracking short-term liquidity.</li><li><strong>Gearing:</strong> Debt divided by Capital Employed, tracking leverage structure risk.</li><li><strong>CAPM Cost of Equity:</strong> Calculated as risk-free rate plus Beta multiplied by the equity risk premium.</li></ul>" },
-                            { type: "mcq", prompt: "If an enterprise records current assets of £300,000 and current liabilities of £150,000, what is its exact current ratio?", options: ["1.5", "2.0", "2.5"], answer: "2.0", explain: "The current liquidity ratio is calculated as £300,000 divided by £150,000, which equals 2.0." }
-                        ]
-                    }
-                ]
-            },
-            {
-                section: "Section 7",
-                title: "Effective IR in Practice",
-                modules: [
-                    {
-                        id: "s7_m1",
-                        title: "7.1 Practical IR Execution Lifecycles",
-                        desc: "Managing results day calendars, market consensus models, investor targeting methods, and crisis communication rules.",
-                        steps: [
-                            { type: "text", title: "The Operational Realities of the IRO", html: "<p>Practical investor relations maps corporate strategy directly to the rhythms of the financial calendar.</p><h3>Core Operational Areas:</h3><ul><li><strong>Consensus Aggregation:</strong> Collecting and tracking sell-side analysts' financial models to monitor market expectations.</li><li><strong>Targeting Matrix:</strong> Identifying institutional managers whose investment styles match the company's growth profile.</li><li><strong>Crisis Communications:</strong> Deploying fact-checked statements quickly to stabilize market sentiment during unexpected events.</li></ul>" },
-                            { type: "mcq", prompt: "What term describes the arithmetic mean of all published earnings and revenue forecasts by covering sell-side analysts?", options: ["Market Consensus", "Internal Run Rate", "Target Multiple Valuation"], answer: "Market Consensus", explain: "Market consensus represents the compiled average expectation track used by the market to evaluate operational performance." }
-                        ]
-                    }
-                ]
-            }
-        ];
+        const WORKER_URL = window.location.origin;
+        let masterCurriculum = [];
+        let runtime = { activeModule: null, activeStepIndex: 0 };
 
-        let appState = { userEmail: null, totalXP: 0, streakCount: 1, progressMap: {} };
-        let runtime = { activeModule: null, activeStepIndex: 0, chosenOption: null, isEvaluated: false };
+        window.addEventListener("DOMContentLoaded", loadSyllabusFromD1);
 
-        window.addEventListener("DOMContentLoaded", () => {
-            initializeRuntimeEnvironment();
-            renderDashboardTree();
-            evaluateGlobalProgress();
-            checkAndTriggerAuthFlow();
-        });
-
-        function initializeRuntimeEnvironment() {
-            const cachedAuth = localStorage.getItem("ICIR_LOGGED_USER");
-            if (cachedAuth) {
-                appState.userEmail = cachedAuth;
-                const cloudData = localStorage.getItem(`ICIR_DATA_${appState.userEmail}`);
-                if (cloudData) {
-                    const parsed = JSON.parse(cloudData);
-                    appState.totalXP = parsed.xp || 0;
-                    appState.streakCount = parsed.streak || 1;
-                    appState.progressMap = parsed.progress || {};
+        async function loadSyllabusFromD1() {
+            try {
+                const response = await fetch(`${WORKER_URL}/api/syllabus`);
+                if (!response.ok) throw new Error("Database empty or API error");
+                const rawSteps = await response.json();
+                
+                if (rawSteps.length === 0) {
+                    document.getElementById("status").innerText = "Database is empty. Please execute the INSERT SQL scripts in your D1 console.";
+                    return;
                 }
-            } else {
-                const guestData = localStorage.getItem("ICIR_GUEST_DATA");
-                if (guestData) {
-                    const parsed = JSON.parse(guestData);
-                    appState.totalXP = parsed.xp || 0;
-                    appState.streakCount = parsed.streak || 1;
-                    appState.progressMap = parsed.progress || {};
-                }
-            }
-            refreshHeaderStatsDocks();
-        }
 
-        function checkAndTriggerAuthFlow() {
-            if (!appState.userEmail && !localStorage.getItem("ICIR_GUEST_SKIP")) {
-                document.getElementById("auth-modal-screen").classList.add("active");
-                if (typeof google !== "undefined") {
-                    google.accounts.id.initialize({
-                        client_id: "251456435715-ekhjb33hh3ldl67sgc7ubj38a7d50mr6.apps.googleusercontent.com",
-                        callback: handleGoogleIdentityCatch
-                    });
-                    google.accounts.id.renderButton(document.getElementById("google-signin-btn-target"), { theme: "outline", size: "large" });
-                }
-            }
-        }
-
-        async function handleGoogleIdentityCatch(response) {
-            localStorage.setItem("GOOGLE_JWT_TOKEN", response.credential);
-            const payload = JSON.parse(atob(response.credential.split('.')[1]));
-            if (payload.email_verified) {
-                appState.userEmail = payload.email;
-                localStorage.setItem("ICIR_LOGGED_USER", appState.userEmail);
-                commitSystemStateToStorage();
-                closeAuthPortal();
-                refreshHeaderStatsDocks();
-                renderDashboardTree();
-                evaluateGlobalProgress();
-            }
-        }
-
-        function closeAuthPortal() {
-            localStorage.setItem("ICIR_GUEST_SKIP", "true");
-            document.getElementById("auth-modal-screen").classList.remove("active");
-            refreshHeaderStatsDocks();
-        }
-
-        function executeUserLogout() {
-            localStorage.removeItem("ICIR_LOGGED_USER");
-            localStorage.removeItem("GOOGLE_JWT_TOKEN");
-            localStorage.removeItem("ICIR_GUEST_SKIP");
-            appState.userEmail = null; appState.totalXP = 0; appState.streakCount = 1; appState.progressMap = {};
-            initializeRuntimeEnvironment(); refreshHeaderStatsDocks(); renderDashboardTree(); evaluateGlobalProgress(); checkAndTriggerAuthFlow();
-        }
-
-        function refreshHeaderStatsDocks() {
-            document.getElementById("xp-val").innerText = appState.totalXP;
-            document.getElementById("streak-val").innerText = appState.streakCount;
-            const indicator = document.getElementById("sync-status-indicator");
-            const headerWrapper = document.getElementById("auth-header-wrapper");
-            if (appState.userEmail) {
-                indicator.innerHTML = `<span style="color: var(--duo-green); font-weight:700;"><i class="fa-solid fa-cloud"></i> D1 Synchronized: ${appState.userEmail}</span>`;
-                headerWrapper.innerHTML = `<button class="logout-btn" onclick="executeUserLogout()">Logout</button>`;
-            } else {
-                indicator.innerHTML = `<span style="color: var(--duo-orange); font-weight:700;"><i class="fa-solid fa-clock"></i> Local Mode. <a href="#" style="color:var(--duo-blue);" onclick="localStorage.removeItem('ICIR_GUEST_SKIP'); checkAndTriggerAuthFlow();">Sync Profile</a> to back up track.</span>`;
-                headerWrapper.innerHTML = `<button class="inline-link-btn" onclick="localStorage.removeItem('ICIR_GUEST_SKIP'); checkAndTriggerAuthFlow();">Sync Profile</button>`;
-            }
-        }
-
-        function commitSystemStateToStorage() {
-            const payload = { xp: appState.totalXP, streak: appState.streakCount, progress: appState.progressMap };
-            if (appState.userEmail) {
-                localStorage.setItem(`ICIR_DATA_${appState.userEmail}`, JSON.stringify(payload));
-            } else {
-                localStorage.setItem("ICIR_GUEST_DATA", JSON.stringify(payload));
-            }
-            refreshHeaderStatsDocks();
-        }
-
-        function renderDashboardTree() {
-            const treeRoot = document.getElementById("curriculum-tree-root");
-            treeRoot.innerHTML = "";
-            ICIR_CURRICULUM_DATABASE.forEach(sec => {
-                const group = document.createElement("div");
-                group.className = "module-group";
-                group.innerHTML = `<div class="section-heading"><span>${sec.section}: ${sec.title}</span></div>`;
-                sec.modules.forEach(mod => {
-                    const pct = appState.progressMap[mod.id] || 0;
-                    const card = document.createElement("div");
-                    card.className = "module-card";
-                    card.onclick = () => spinUpModuleRuntime(mod.id);
-                    card.innerHTML = `
-                        <div class="module-title">${mod.title}</div>
-                        <div class="module-desc" style="margin-bottom:10px;">${mod.desc}</div>
-                        <div class="global-progress-dock-wrapper" style="width:100%;">
-                            <div class="global-dock-bar"><div class="global-dock-fill" style="width:${pct}%; background:var(--duo-green);"></div></div>
-                            <span style="font-weight:700; font-size:0.85rem; color:var(--text-muted);">${Math.round(pct)}%</span>
-                        </div>
-                    `;
-                    group.appendChild(card);
+                let sectionMap = {};
+                rawSteps.forEach(step => {
+                    if (!sectionMap[step.section]) sectionMap[step.section] = { title: step.section, modules: {} };
+                    if (!sectionMap[step.section].modules[step.id]) {
+                        sectionMap[step.section].modules[step.id] = { id: step.id, title: step.module_title, steps: [] };
+                    }
+                    sectionMap[step.section].modules[step.id].steps.push({ ...step, options: step.options ? JSON.parse(step.options) : [] });
                 });
-                treeRoot.appendChild(group);
+
+                masterCurriculum = Object.values(sectionMap).map(s => ({ title: s.title, modules: Object.values(s.modules) }));
+                renderDashboard();
+                document.getElementById("status").innerText = "Curriculum loaded successfully.";
+            } catch (e) {
+                document.getElementById("status").innerText = "Error: " + e.message;
+            }
+        }
+
+        function renderDashboard() {
+            const root = document.getElementById("curriculum-tree-root");
+            masterCurriculum.forEach(sec => {
+                root.innerHTML += `<h3>${sec.title}</h3>`;
+                sec.modules.forEach(mod => {
+                    root.innerHTML += `<div class="module-card" onclick="spinUpModule('${mod.id}')"><strong>${mod.title}</strong></div>`;
+                });
             });
         }
 
-        function spinUpModuleRuntime(moduleId) {
-            let found = null;
-            ICIR_CURRICULUM_DATABASE.forEach(sec => {
-                const match = sec.modules.find(m => m.id === moduleId);
-                if (match) found = match;
-            });
-            if (!found) return;
-            runtime.activeModule = found; runtime.activeStepIndex = 0;
+        function spinUpModule(id) {
+            masterCurriculum.forEach(s => s.modules.forEach(m => { if(m.id === id) runtime.activeModule = m; }));
+            runtime.activeStepIndex = 0;
             document.getElementById("dashboard-screen").classList.remove("active");
             document.getElementById("lesson-screen").classList.add("active");
             executeStepLoad();
         }
 
         function executeStepLoad() {
-            runtime.chosenOption = null; runtime.isEvaluated = false;
-            const feedbackBox = document.getElementById("tray-feedback-box");
-            feedbackBox.style.display = "none"; feedbackBox.innerHTML = "";
-            const totalSteps = runtime.activeModule.steps.length;
-            document.getElementById("runtime-progress-bar").style.width = `${(runtime.activeStepIndex / totalSteps) * 100}%`;
-            if (runtime.activeStepIndex >= totalSteps) { finalizeModuleCompletion(); return; }
-            const stepData = runtime.activeModule.steps[runtime.activeStepIndex];
-            const contentPane = document.getElementById("runtime-content-pane");
-            const actionBtn = document.getElementById("runtime-action-btn");
-            contentPane.innerHTML = `<h2>${stepData.title || 'Interactive Knowledge Verification'}</h2>`;
-            if (stepData.type === "text") {
-                contentPane.innerHTML += stepData.html;
-                actionBtn.innerText = "Continue Module";
-            } else if (stepData.type === "mcq") {
-                let optionsHtml = stepData.options.map(opt => `<button class="option-item" onclick="handleOptionSelect(this, \`${opt.replace(/"/g, '&quot;')}\`)">${opt}</button>`).join('');
-                contentPane.innerHTML += `<h3>${stepData.prompt}</h3><div class="options-stack">${optionsHtml}</div>`;
-                actionBtn.innerText = "Verify Concept";
+            const step = runtime.activeModule.steps[runtime.activeStepIndex];
+            const pane = document.getElementById("runtime-content-pane");
+            pane.innerHTML = `<h2>${step.title}</h2><p>${step.body_content || ''}</p>`;
+            if (step.step_type === 'mcq') {
+                pane.innerHTML += `<h3>${step.prompt}</h3>` + step.options.map(o => `<button class="option-item">${o}</button>`).join('<br>');
             }
-        }
-
-        function handleOptionSelect(node, optionText) {
-            if (runtime.isEvaluated) return;
-            document.querySelectorAll(".option-item").forEach(el => el.classList.remove("selected"));
-            node.classList.add("selected");
-            runtime.chosenOption = optionText;
         }
 
         function handleStepTransition() {
-            const stepData = runtime.activeModule.steps[runtime.activeStepIndex];
-            const actionBtn = document.getElementById("runtime-action-btn");
-            const feedbackBox = document.getElementById("tray-feedback-box");
-            if (stepData.type === "text") {
-                runtime.activeStepIndex++; executeStepLoad();
-            } else if (stepData.type === "mcq") {
-                if (!runtime.chosenOption) return;
-                if (!runtime.isEvaluated) {
-                    runtime.isEvaluated = true;
-                    feedbackBox.style.display = "flex";
-                    if (runtime.chosenOption === stepData.answer) {
-                        feedbackBox.className = "tray-feedback correct";
-                        feedbackBox.innerHTML = `<div><strong>Correct!</strong><br>${stepData.explain}</div>`;
-                        appState.totalXP += 25; commitSystemStateToStorage();
-                    } else {
-                        feedbackBox.className = "tray-feedback incorrect";
-                        feedbackBox.innerHTML = `<div><strong>Incorrect Analysis.</strong><br>${stepData.explain}</div>`;
-                    }
-                    actionBtn.innerText = "Continue";
-                } else {
-                    runtime.activeStepIndex++; executeStepLoad();
-                }
-            }
-        }
-
-        function finalizeModuleCompletion() {
-            appState.progressMap[runtime.activeModule.id] = 100; appState.totalXP += 50; commitSystemStateToStorage();
-            confetti({ particleCount: 100, spread: 60 });
-            document.getElementById("lesson-screen").classList.remove("active");
-            document.getElementById("dashboard-screen").classList.add("active");
-            renderDashboardTree(); evaluateGlobalProgress();
-        }
-
-        function evaluateGlobalProgress() {
-            let totalModules = 0, earnedProgress = 0;
-            ICIR_CURRICULUM_DATABASE.forEach(sec => sec.modules.forEach(mod => { totalModules++; earnedProgress += (appState.progressMap[mod.id] || 0); }));
-            const overallPct = earnedProgress / totalModules;
-            document.getElementById("global-progress-bar-fill").style.width = `${overallPct}%`;
-            document.getElementById("global-percentage-label").innerText = `${Math.round(overallPct)}% Complete`;
-        }
-
-        function exitActiveRuntime() {
-            document.getElementById("lesson-screen").classList.remove("active");
-            document.getElementById("dashboard-screen").classList.add("active");
-            renderDashboardTree(); evaluateGlobalProgress();
+            runtime.activeStepIndex++;
+            if (runtime.activeStepIndex < runtime.activeModule.steps.length) executeStepLoad();
+            else { document.getElementById("lesson-screen").classList.remove("active"); document.getElementById("dashboard-screen").classList.add("active"); }
         }
     </script>
 </body>
