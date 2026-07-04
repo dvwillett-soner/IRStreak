@@ -2,7 +2,10 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // API Route for Database
+    // LOGGING: This will appear in your Cloudflare Dashboard "Observability > Logs"
+    console.log("Request received for path:", url.pathname);
+
+    // 1. API Route
     if (url.pathname === "/api/syllabus") {
       try {
         const { results } = await env.DB.prepare(
@@ -10,14 +13,17 @@ export default {
         ).all();
         
         return new Response(JSON.stringify(results), { 
-          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } 
+          headers: { 
+            "Content-Type": "application/json", 
+            "Access-Control-Allow-Origin": "*" 
+          } 
         });
       } catch (err) {
         return new Response(JSON.stringify({ error: err.message }), { status: 500 });
       }
     }
 
-    // Serve static files from the 'public' folder
+    // 2. Static Assets
     return env.ASSETS.fetch(request);
   }
 };
