@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRStreak - ICIR Exam Prep Academy</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f7f9fa;
+            --card-bg: #ffffff;
+            --text-main: #3c3c3c;
+            --text-muted: #777777;
+            --duo-green: #58cc02;
+            --duo-blue: #1cb0f6;
+            --duo-orange: #ff9600;
+            --border-color: #e5e5e5;
+            --border-width: 2px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 80px; }
+        header { background-color: var(--card-bg); border-bottom: var(--border-width) solid var(--border-color); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo-area { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 800; color: var(--duo-blue); }
+        .stats-banner { display: flex; align-items: center; gap: 20px; font-weight: 700; }
+        .stat-badge { display: flex; align-items: center; gap: 6px; }
+        .stat-badge.streak { color: var(--duo-orange); }
+        .stat-badge.xp { color: var(--duo-blue); }
+        .auth-status-zone { display: flex; align-items: center; gap: 10px; border-left: 2px solid var(--border-color); padding-left: 15px; }
+        .auth-pill { font-size: 0.85rem; font-weight: 700; padding: 4px 10px; border-radius: 12px; background: #eee; }
+        .auth-pill.verified { background-color: #d7ffb8; color: #257e0a; }
+        .auth-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .auth-modal.active { display: flex; }
+        .auth-card { background: white; padding: 30px; border-radius: 16px; width: 100%; max-width: 400px; border: var(--border-width) solid var(--border-color); text-align: center; }
+        .container { max-width: 800px; width: 100%; margin: 30px auto; padding: 0 20px; flex-grow: 1; }
+        .screen { display: none; }
+        .screen.active { display: block; }
+        .dashboard-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 5px; text-align: center; }
+        .dashboard-subtitle { font-size: 1rem; color: var(--text-muted); text-align: center; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .module-card { background: var(--card-bg); border: var(--border-width) solid var(--border-color); border-bottom: 5px solid var(--border-color); border-radius: 16px; padding: 20px; margin-bottom: 20px; cursor: pointer; transition: transform 0.1s ease, border-color 0.2s; }
+        .module-card:hover { transform: translateY(-2px); border-color: var(--duo-blue); }
+        .module-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .module-badge { background-color: #e1f5fe; color: #0288d1; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
+        .module-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; }
+        .module-desc { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 15px; }
+        .lesson-progress-container { display: flex; align-items: center; gap: 10px; }
+        .mini-progress-bar { flex-grow: 1; height: 10px; background-color: #e5e5e5; border-radius: 10px; overflow: hidden; }
+        .mini-progress-fill { height: 100%; background-color: var(--duo-green); width: 0%; transition: width 0.4s ease; }
+        .percent-text { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); }
+        .lesson-window { background: var(--card-bg); border: var(--border-width) solid var(--border-color); border-radius: 20px; padding: 30px; min-height: 400px; display: flex; flex-direction: column; justify-content: space-between; }
+        .lesson-top-nav { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .close-btn { background: none; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer; }
+        .interactive-bar-container { flex-grow: 1; height: 16px; background-color: var(--border-color); border-radius: 20px; overflow: hidden; }
+        .interactive-bar-fill { height: 100%; background-color: var(--duo-green); width: 0%; transition: width 0.3s ease; }
+        .prompt-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 20px; }
+        .options-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 20px; }
+        .option-node { border: var(--border-width) solid var(--border-color); border-bottom: 4px solid var(--border-color); border-radius: 12px; padding: 15px 20px; font-size: 1.05rem; font-weight: 600; cursor: pointer; background: white; text-align: left; width: 100%; }
+        .option-node.selected { background-color: #ddf4ff; border-color: var(--duo-blue); color: #186590; }
+        .validation-tray { margin-top: 30px; padding: 20px; border-radius: 12px; display: none; align-items: center; }
+        .validation-tray.correct { display: flex; background-color: #d7ffb8; color: #257e0a; }
+        .validation-tray.incorrect { display: flex; background-color: #ffdfe0; color: #ea2b2b; }
+        .action-row { margin-top: 20px; display: flex; justify-content: flex-end; }
+        .action-btn { background-color: var(--duo-blue); color: white; border: none; border-bottom: 4px solid rgba(0,0,0,0.2); padding: 14px 28px; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        .action-btn.verify-btn { background-color: var(--duo-green); }
+        .global-footer-tracker { position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--card-bg); border-top: var(--border-width) solid var(--border-color); padding: 12px 30px; display: flex; align-items: center; justify-content: space-between; z-index: 99; }
+        .global-progress-track { width: 50%; height: 14px; background-color: var(--border-color); border-radius: 20px; overflow: hidden; }
+        .global-progress-fill { height: 100%; background: linear-gradient(90deg, #1cb0f6, #58cc02); width: 0%; transition: width 0.5s ease; }
+        .inline-btn { background: var(--duo-blue); color: white; border: none; padding: 6px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .inline-btn.secondary { background: none; color: var(--duo-blue); border: 2px solid var(--border-color); }
+        .reset-btn { background: none; border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-area"><i class="fa-solid fa-graduation-cap"></i> <span>IRStreak</span></div>
+        <div class="stats-banner">
+            <div class="stat-badge streak"><i class="fa-solid fa-fire"></i> <span id="streak-val">1</span> Day</div>
+            <div class="stat-badge xp"><i class="fa-solid fa-bolt"></i> <span id="xp-val">0</span> XP</div>
+            <div class="auth-status-zone" id="auth-header-wrapper"></div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="dashboard-screen" class="screen active">
+            <h2 class="dashboard-title">Select Your Study Focus Module</h2>
+            <div class="dashboard-subtitle" id="sync-status-indicator"></div>
+            <div id="modules-list-root"></div>
+        </div>
+
+        <div id="lesson-screen" class="screen">
+            <div class="lesson-window">
+                <div>
+                    <div class="lesson-top-nav">
+                        <button class="close-btn" onclick="exitActiveLesson()"><i class="fa-solid fa-xmark"></i></button>
+                        <div class="interactive-bar-container"><div id="lesson-progress-bar" class="interactive-bar-fill"></div></div>
+                    </div>
+                    <div id="exercise-viewport"></div>
+                </div>
+                <div>
+                    <div id="tray-correct" class="validation-tray correct"><strong>🎉 Correct Answer! Excellent analysis.</strong></div>
+                    <div id="tray-incorrect" class="validation-tray incorrect"><div id="incorrect-explanation"></div></div>
+                    <div class="action-row"><button id="primary-action-btn" class="action-btn" onclick="handlePrimaryActionClick()">Check Answer</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="auth-modal-screen" class="auth-modal">
+        <div class="auth-card">
+            <h3>Premium Account Portal</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Protect your milestones with secure identity syncing.</p>
+            <div style="display: flex; justify-content: center; margin-bottom: 15px;"><div id="google-signin-btn-target"></div></div>
+            <button class="inline-btn secondary" style="width:100%; border:none;" onclick="closeAuthModal()">Cancel</button>
+        </div>
+    </div>
+
+    <div class="global-footer-tracker">
+        <div class="global-meta"><span>Overall Curriculum Path</span><br><strong id="global-percentage-label">0% Complete</strong></div>
+        <div class="global-progress-track"><div id="global-progress-bar-fill" class="global-progress-fill"></div></div>
+        <div style="font-weight: 800; color: var(--duo-green);"><i class="fa-solid fa-trophy"></i> Certified Goal</div>
+    </div>
+
+    <script>
+        const WORKER_URL = window.location.origin;
+
+        const ICIR_CURRICULUM = [
+            { id: 1, sectionCode: "Section 1", title: "Introduction to Investor Relations", desc: "Core value drivers, internal stakeholders, and baseline code of conduct[cite: 7].", lessons: [{ type: "mcq", prompt: "Which pillar of the '5 Cs' requires the Investor Relations Officer to act as a two-way information stream?[cite: 7]", options: ["Credibility[cite: 7]", "Conduit[cite: 7]", "Commitment[cite: 7]"], answer: "Conduit[cite: 7]", explain: "Conduit status demands managing fluid bidirectional communication between corporate matrices and markets[cite: 7]." }] },
+            { id: 2, sectionCode: "Section 2", title: "Financial Markets Structure", desc: "Deconstruct global execution frameworks, exchanges, and parameters[cite: 6].", lessons: [{ type: "mcq", prompt: "Why do IR functions unify with Corporate Secretaries when managing Proxy Advisory Agencies (PAAs)?[cite: 6]", options: ["To insulate direct macro option blocks", "To articulate and explain ESG framework positioning dynamically[cite: 6]"], answer: "To articulate and explain ESG framework positioning dynamically[cite: 6]", explain: "PAAs command considerable voting leverage across structural proxy matrices[cite: 6]." }] },
+            { id: 3, sectionCode: "Section 3", title: "Corporate Entities and Governance", desc: "Analyze legal company models, share capitals, and governance code metrics[cite: 5].", lessons: [{ type: "mcq", prompt: "Effective from January 1, 2026, boards are explicitly required to formally declare the effectiveness of which interior structure?[cite: 5]", options: ["Material internal controls[cite: 5]", "Alternative index derivative pools"], answer: "Material internal controls[cite: 5]", explain: "The modern Corporate Governance framework enforces clean operational validation loops around control environments[cite: 5]." }] }
+        ];
+
+        let currentUser = null;
+        let userXP = 0;
+        let dayStreak = 1;
+        let moduleProgressState = { 1: 0, 2: 0, 3: 0 };
+        let activeModule = null;
+        let activeLessonIndex = 0;
+        let currentLessonState = "PROMPT";
+        let chosenMCQOption = null;
+
+        window.addEventListener("DOMContentLoaded", () => {
+            loadUserSession();
+            renderDashboardModules();
+            updateGlobalProgressDOM();
+            refreshAuthUIHeaders();
+        });
+
+        function loadUserSession() {
+            const cachedUser = localStorage.getItem("ICIR_LOGGED_USER");
+            if (cachedUser) {
+                currentUser = cachedUser;
+                const userData = localStorage.getItem(`ICIR_DATA_${currentUser}`);
+                if (userData) {
+                    const parsed = JSON.parse(userData);
+                    userXP = parsed.xp || 0;
+                    dayStreak = parsed.streak || 1;
+                    moduleProgressState = parsed.progress || { 1: 0, 2: 0, 3: 0 };
+                }
+            } else {
+                const guestData = localStorage.getItem("ICIR_GUEST_DATA");
+                if (guestData) {
+                    const parsed = JSON.parse(guestData);
+                    userXP = parsed.xp || 0;
+                    dayStreak = parsed.streak || 1;
+                    moduleProgressState = parsed.progress || { 1: 0, 2: 0, 3: 0 };
+                }
+            }
+            updateViewMetrics();
+        }
+
+        function updateViewMetrics() {
+            document.getElementById("xp-val").innerText = userXP;
+            document.getElementById("streak-val").innerText = dayStreak;
+            const syncLabel = document.getElementById("sync-status-indicator");
+            if (currentUser) {
+                syncLabel.innerHTML = `<span style='color:var(--duo-green)'><i class='fa-solid fa-cloud-check'></i> Secure Profile: <strong>${currentUser}</strong></span>`;
+            } else {
+                syncLabel.innerHTML = `<span style='color:var(--duo-orange)'><i class='fa-solid fa-clock-rotate-left'></i> Local Sync Mode. <a href='#' onclick='openAuthModal()'>Login</a> to protect stats.</span>`;
+            }
+        }
+
+        async function saveProfileState() {
+            updateViewMetrics();
+            const payload = { xp: userXP, streak: dayStreak, progress: moduleProgressState };
+            if (currentUser) {
+                localStorage.setItem(`ICIR_DATA_${currentUser}`, JSON.stringify(payload));
+                try {
+                    await fetch(`${WORKER_URL}/api/auth/google`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ token: localStorage.getItem("GOOGLE_JWT_TOKEN"), xp: userXP, streak: dayStreak, progress: moduleProgressState })
+                    });
+                } catch(e) { console.error("Cloud D1 auto-sync pipeline error:", e); }
+            } else {
+                localStorage.setItem("ICIR_GUEST_DATA", JSON.stringify(payload));
+            }
+        }
+
+        function openAuthModal() {
+            document.getElementById("auth-modal-screen").classList.add("active");
+            if (typeof google !== "undefined") {
+                google.accounts.id.initialize({
+                    client_id: "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com", // <-- PLACE OAUTH CLIENT ID HERE
+                    callback: catchGoogleSignIn
+                });
+                google.accounts.id.renderButton(document.getElementById("google-signin-btn-target"), { theme: "outline", size: "large" });
+            }
+        }
+
+        async function catchGoogleSignIn(response) {
+            localStorage.setItem("GOOGLE_JWT_TOKEN", response.credential);
+            try {
+                const res = await fetch(`${WORKER_URL}/api/auth/google`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ token: response.credential, xp: userXP, streak: dayStreak, progress: moduleProgressState })
+                });
+                const data = await res.json();
+                if(data.success) {
+                    currentUser = data.email;
+                    userXP = data.xp;
+                    dayStreak = data.streak;
+                    moduleProgressState = data.progress;
+                    localStorage.setItem("ICIR_LOGGED_USER", currentUser);
+                    updateViewMetrics();
+                    closeAuthModal();
+                    refreshAuthUIHeaders();
+                    renderDashboardModules();
+                    updateGlobalProgressDOM();
+                }
+            } catch(e) { alert("D1 database synchronization initialization failed."); }
+        }
+
+        function executeLogout() {
+            localStorage.removeItem("ICIR_LOGGED_USER");
+            localStorage.removeItem("GOOGLE_JWT_TOKEN");
+            currentUser = null; userXP = 0; dayStreak = 1; moduleProgressState = { 1: 0, 2: 0, 3: 0 };
+            updateViewMetrics(); refreshAuthUIHeaders(); renderDashboardModules(); updateGlobalProgressDOM();
+        }
+
+        function refreshAuthUIHeaders() {
+            const wrapper = document.getElementById("auth-header-wrapper");
+            wrapper.innerHTML = currentUser ? 
+                `<span class='auth-pill verified'>Active Profile</span><button class='reset-btn' onclick='executeLogout()'>Logout</button>` :
+                `<button class='inline-btn' onclick='openAuthModal()'>Sign In</button>`;
+        }
+
+        function closeAuthModal() { document.getElementById("auth-modal-screen").classList.remove("active"); }
+
+        function renderDashboardModules() {
+            const container = document.getElementById("modules-list-root");
+            container.innerHTML = "";
+            ICIR_CURRICULUM.forEach(mod => {
+                const pct = moduleProgressState[mod.id] || 0;
+                const card = document.createElement("div");
+                card.className = "module-card";
+                card.onclick = () => launchModule(mod.id);
+                card.innerHTML = `
+                    <div class="module-header"><span class="module-badge">${mod.sectionCode}</span><strong>+15 XP</strong></div>
+                    <div class="module-title">${mod.title}</div>
+                    <div class="module-desc">${mod.desc}</div>
+                    <div class="lesson-progress-container">
+                        <div class="mini-progress-bar"><div class="mini-progress-fill" style="width: ${pct}%"></div></div>
+                        <span class="percent-text">${Math.round(pct)}%</span>
+                    </div>`;
+                container.appendChild(card);
+            });
+        }
+
+        function launchModule(id) {
+            activeModule = ICIR_CURRICULUM.find(m => m.id === id);
+            activeLessonIndex = 0;
+            document.getElementById("dashboard-screen").classList.remove("active");
+            document.getElementById("lesson-screen").classList.add("active");
+            loadStep();
+        }
+
+        function loadStep() {
+            resetValidationUI();
+            const total = activeModule.lessons.length;
+            document.getElementById("lesson-progress-bar").style.width = `${(activeLessonIndex/total)*100}%`;
+            if (activeLessonIndex >= total) { completeModule(); return; }
+
+            const data = activeModule.lessons[activeLessonIndex];
+            currentLessonState = "PROMPT"; chosenMCQOption = null;
+            document.getElementById("primary-action-btn").innerText = "Check Answer";
+            document.getElementById("primary-action-btn").className = "action-btn verify-btn";
+
+            const options = data.options.map(o => `<button class="option-node" onclick="selectOption(this, '${o}')">${o}</button>`).join('');
+            document.getElementById("exercise-viewport").innerHTML = `<h3 class="prompt-title">${data.prompt}</h3><div class="options-grid">${options}</div>`;
+        }
+
+        function selectOption(node, text) {
+            if (currentLessonState !== "PROMPT") return;
+            document.querySelectorAll(".option-node").forEach(n => n.classList.remove("selected"));
+            node.classList.add("selected");
+            chosenMCQOption = text;
+        }
+
+        function handlePrimaryActionClick() {
+            const data = activeModule.lessons[activeLessonIndex];
+            if (currentLessonState === "PROMPT") {
+                if (!chosenMCQOption) return;
+                if (chosenMCQOption === data.answer) {
+                    currentLessonState = "VALIDATED_CORRECT";
+                    document.getElementById("tray-correct").style.display = "flex";
+                    userXP += 15;
+                    saveProfileState();
+                } else {
+                    currentLessonState = "VALIDATED_INCORRECT";
+                    document.getElementById("incorrect-explanation").innerText = `Review Core Rule: ${data.explain}`;
+                    document.getElementById("tray-incorrect").style.display = "flex";
+                }
+                document.getElementById("primary-action-btn").innerText = "Continue";
+                document.getElementById("primary-action-btn").className = "action-btn";
+            } else {
+                activeLessonIndex++;
+                loadStep();
+            }
+        }
+
+        function resetValidationUI() {
+            document.getElementById("tray-correct").style.display = "none";
+            document.getElementById("tray-incorrect").style.display = "none";
+        }
+
+        function completeModule() {
+            moduleProgressState[activeModule.id] = 100;
+            saveProfileState();
+            confetti({ particleCount: 100, spread: 60 });
+            document.getElementById("lesson-screen").classList.remove("active");
+            document.getElementById("dashboard-screen").classList.add("active");
+            renderDashboardModules();
+            updateGlobalProgressDOM();
+        }
+
+        function updateGlobalProgressDOM() {
+            let total = 0;
+            Object.keys(moduleProgressState).forEach(k => { total += moduleProgressState[k]; });
+            const pct = total / Object.keys(moduleProgressState).length;
+            document.getElementById("global-progress-bar-fill").style.width = `${pct}%`;
+            document.getElementById("global-percentage-label").innerText = `${Math.round(pct)}% Complete`;
+        }
+
+        function exitActiveLesson() {
+            document.getElementById("lesson-screen").classList.remove("active");
+            document.getElementById("dashboard-screen").classList.add("active");
+            resetValidationUI(); renderDashboardModules();
+        }
+    </script>
+</body>
+</html>
