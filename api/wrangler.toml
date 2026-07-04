@@ -2,7 +2,7 @@ name = "irstreak-api"
 compatibility_date = "2026-07-04"
 
 [d1_databases]
-DB = { binding = "DB", database_name = "irstreak", database_id = "..." }
+DB = { binding = "DB", database_name = "irstreak", database_id = "1c809404-7c96-432c-b090-1e4786679a4b" }
 
 [observability]
 enabled = false
