@@ -1,5 +1,5 @@
 name = "irstreak"
-main = "src/index.js"
+main = "_worker.js"
 compatibility_date = "2026-07-04"
 
 # 1. Maps your frontend folder to the Workers Asset Engine
