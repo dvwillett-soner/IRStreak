@@ -1,32 +1,23 @@
 export default {
   async fetch(request, env) {
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, HEAD, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    };
-
-    // Handle Preflight
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
-    }
-
     const url = new URL(request.url);
+    
+    // Log the request to your Cloudflare dashboard logs
+    console.log("Incoming request for:", url.pathname);
 
-    if (url.pathname === "/api/syllabus") {
+    // Explicitly allow both /api/syllabus and just /syllabus 
+    // in case the URL pathing is stripping the /api/
+    if (url.pathname === "/api/syllabus" || url.pathname === "/syllabus") {
       try {
-        const { results } = await env.DB.prepare("SELECT * FROM Syllabus").all();
-        return new Response(JSON.stringify(results), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        // Return a simple success message first to prove it works
+        return new Response(JSON.stringify({ status: "success", path_received: url.pathname }), {
+          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
         });
       } catch (err) {
-        return new Response(JSON.stringify({ error: err.message }), {
-          status: 500,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        });
+        return new Response(JSON.stringify({ error: err.message }), { status: 500 });
       }
     }
 
-    return new Response("Not Found", { status: 404, headers: corsHeaders });
+    return new Response("No match found for path: " + url.pathname, { status: 404 });
   }
 };
