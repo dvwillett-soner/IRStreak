@@ -2,7 +2,6 @@ name = "irstreak-api"
 main = "src/index.js"
 compatibility_date = "2026-07-04"
 
-# This double-bracket structure indicates an array of databases
 [[d1_databases]]
 binding = "DB"
 database_name = "irstreak"
