@@ -1,0 +1,78 @@
+<!-- UPDATE THE AUTH MODAL SCREEN INNER HTML IN YOUR CODE -->
+<div id="auth-modal-screen" class="auth-modal">
+    <div class="auth-card" style="text-align: center;">
+        <h3>Premium Account Portal</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+            Secure cross-device profile syncing powered by Google.
+        </p>
+        
+        <!-- Official Google Auth Anchor Node Target Container -->
+        <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+            <div id="google-signin-btn-target"></div>
+        </div>
+
+        <button class="inline-btn secondary" style="width:100%; border:none; margin-top:10px;" onclick="closeAuthModal()">Cancel</button>
+    </div>
+</div>
+
+<script>
+    // Initialize Google's Identity Layer dynamically when modal loads
+    function initializeGoogleSignIn() {
+        if (typeof google === "undefined") {
+            setTimeout(initializeGoogleSignIn, 200); // Retry loop in case script delays loading
+            return;
+        }
+
+        google.accounts.id.initialize({
+            client_id: "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com", // <-- PUSH CLIENT ID HERE
+            callback: handleGoogleSignInResponse
+        });
+
+        google.accounts.id.renderButton(
+            document.getElementById("google-signin-btn-target"),
+            { theme: "outline", size: "large", width: "300" } // Renders standard identity button safely
+        );
+    }
+
+    // Upgraded Auth Interceptor function inside your frontend code
+    function openAuthModal(intent = "SIGNUP") {
+        document.getElementById("auth-modal-screen").classList.add("active");
+        initializeGoogleSignIn();
+    }
+
+    // Capture the cryptographically signed credential string sent by Google
+    async function handleGoogleSignInResponse(response) {
+        const idToken = response.credential; // This is Google's signed identity JWT
+
+        try {
+            // Send JWT payload to your Cloudflare Worker endpoint for server-side extraction
+            const workerResponse = await fetch(`${WORKER_URL}/api/auth/google`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token: idToken })
+            });
+            
+            const profileData = await workerResponse.json();
+            
+            if (profileData.success) {
+                currentUser = profileData.email;
+                userXP = profileData.xp || 0;
+                dayStreak = profileData.streak || 1;
+                moduleProgressState = profileData.progress || {};
+                
+                localStorage.setItem("ICIR_APP_LOGGED_USER", currentUser);
+                persistCurrentProgressState(); // Saves state to cloud/local caches
+                closeAuthModal();
+                refreshAuthUIHeaders();
+                renderDashboardModules();
+                updateGlobalProgressDOM();
+                alert(`Welcome ${profileData.name || currentUser}! Premium sync enabled.`);
+            } else {
+                alert("Google Authentication layer initialization error.");
+            }
+        } catch (err) {
+            console.error("Auth routing failure:", err);
+            alert("Could not reach Cloudflare backend authentication node.");
+        }
+    }
+</script>
