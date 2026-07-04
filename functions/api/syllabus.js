@@ -1,6 +1,8 @@
-export async function onRequestGet(context) {
+export async function onRequestGet({ env }) {
   try {
-    const { results } = await context.env.DB.prepare(
+    // We explicitly pull the DB binding from the environment context
+    const db = env.DB;
+    const { results } = await db.prepare(
       "SELECT * FROM Syllabus ORDER BY section ASC, step_index ASC"
     ).all();
     
