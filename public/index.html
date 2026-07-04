@@ -19,28 +19,30 @@
     <div class="container">
         <div id="dashboard-screen" class="screen active">
             <h1>IRStreak Academy</h1>
-            <p id="status">Loading comprehensive study program...</p>
+            <p id="status">Loading program...</p>
             <div id="curriculum-tree-root"></div>
         </div>
 
         <div id="lesson-screen" class="screen">
             <div id="runtime-content-pane"></div>
-            <button class="footer-btn" id="runtime-action-btn" onclick="handleStepTransition()">Next</button>
+            <button id="runtime-action-btn" onclick="handleStepTransition()">Next</button>
             <button onclick="document.location.reload()">Back to Dashboard</button>
         </div>
     </div>
 
     <script>
-        const WORKER_URL = "";
+        // REPLACE THIS WITH YOUR ACTUAL API WORKER URL
+        const API_URL = "irstreak.dvwillett.workers.dev"; 
+        
         let masterCurriculum = [];
         let runtime = { activeModule: null, activeStepIndex: 0 };
 
-        window.addEventListener("DOMContentLoaded", loadSyllabusFromD1);
+        window.addEventListener("DOMContentLoaded", loadSyllabus);
 
-        async function loadSyllabusFromD1() {
+        async function loadSyllabus() {
             try {
-                const response = await fetch(`${WORKER_URL}/api/syllabus`);
-                if (!response.ok) throw new Error("API call failed");
+                const response = await fetch(`${API_URL}/api/syllabus`);
+                if (!response.ok) throw new Error("Failed to fetch syllabus");
                 const rawSteps = await response.json();
                 
                 let sectionMap = {};
