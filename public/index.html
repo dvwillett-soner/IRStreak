@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IRStreak - Full 7-Section ICIR Academy</title>
+    <title>IRStreak - Comprehensive 7-Section ICIR Academy</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -85,7 +85,7 @@
         <div id="dashboard-screen" class="screen active">
             <div class="dashboard-header">
                 <h2 class="dashboard-title">International Certificate in Investor Relations (ICIR)</h2>
-                <p class="dashboard-subtitle" id="sync-status-indicator">Initializing syllabus configurations...</p>
+                <p class="dashboard-subtitle" id="sync-status-indicator">Loading comprehensive study program...</p>
             </div>
             <div id="curriculum-tree-root"></div>
         </div>
@@ -113,7 +113,7 @@
         <div class="auth-card">
             <i class="fa-solid fa-shield-halved" style="font-size: 3rem; color: var(--duo-blue); margin-bottom: 15px;"></i>
             <h3>D1 Cloud Profile Synchronization</h3>
-            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">Sign in to securely backup your 40-hour study progress map directly to Cloudflare D1.</p>
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px;">Sign in to securely backup your 40-hour study milestones directly to your cloud database.</p>
             <div style="display: flex; justify-content: center; margin-bottom: 20px;"><div id="google-signin-btn-target"></div></div>
             <button class="inline-link-btn" style="background:#ccc;" onclick="closeAuthPortal()">Continue as Guest</button>
         </div>
@@ -135,11 +135,20 @@
                 modules: [
                     {
                         id: "s1_m1",
-                        title: "1.1 Core Principles & Value Drivers",
-                        desc: "High-level overview of market context, fair valuation, the 5 Cs framework, and code of conduct rules.",
+                        title: "1.1 Mandate & Purpose of the IR Function",
+                        desc: "Competition for capital, managing volatility, establishing fair asset valuation, and time optimization.",
                         steps: [
-                            { type: "text", title: "Why Companies Have IR Functions", html: "<p>Public enterprises operate within a crowded marketplace for capital. IR acts as a bidirectional conduit managing market expectations to establish a fair valuation based on structural performance rather than speculation.</p><h3>The 5 Cs of IR Communications:</h3><ul><li><strong>Commitment:</strong> Dedication supported from the top down by the CEO and CFO.</li><li><strong>Consistency:</strong> Continuous disclosure through both up and down business cycles.</li><li><strong>Clarity:</strong> Straightforward presentation delivering brevity.</li><li><strong>Credibility:</strong> Authoritative domain expertise building institutional trust.</li><li><strong>Conduit:</strong> Functioning as a bidirectional information network.</li></ul>" },
-                            { type: "mcq", prompt: "Which of the '5 Cs' requires the Investor Relations Officer to behave as a bidirectional information network between executive matrices and capital markets?", options: ["Cybersecurity", "Conduit", "Commitment"], answer: "Conduit", explain: "The Conduit principle states that IR needs to be seen as the manager of the two-way information flow between the company and its investors." }
+                            { type: "text", title: "The Strategic Imperative of IR", html: "<p>Listed companies operate in a highly competitive market for capital allocation. The primary mandate of the IR function is to ensure the company's equity story is communicated clearly to secure a fair market valuation.</p><h3>Core IR Focus Areas:</h3><ul><li><strong>Fair Valuation Management:</strong> Minimizing valuation gaps resulting from market information symmetry blockages.</li><li><strong>Time Management:</strong> Actively managing the schedules of the CEO and CFO to target high-conviction institutional holders.</li><li><strong>Capital Cost Controls:</strong> Building a stable long-term investor base to lower volatility and cost of capital during subsequent capital raisings.</li></ul>" },
+                            { type: "mcq", prompt: "What is the primary operational mandate of an executive corporate Investor Relations function?", options: ["Articulating a clear equity thesis to establish fair valuation and manage market volatility.", "Artificially maintaining high bid prices across global secondary trading desks.", "Exempting corporate legal teams from mandatory quarterly disclosure updates."], answer: "Articulating a clear equity thesis to establish fair valuation and manage market volatility.", explain: "The primary purpose of an IR function is to ensure the market can accurately value the company through transparent, bidirectional communication." }
+                        ]
+                    },
+                    {
+                        id: "s1_m2",
+                        title: "1.2 The 5 Cs of IR Communications",
+                        desc: "Deep walkthrough of the core operational tenets governing best-practice corporate communication.",
+                        steps: [
+                            { type: "text", title: "Implementing the 5 Cs Framework", html: "<p>Best practice investor relations is built on five core pillars that ensure institutional trust through up and down economic cycles.</p><h3>The Framework Structure:</h3><ul><li><strong>Commitment:</strong> Full strategic buy-in from senior leadership, specifically the CEO and CFO.</li><li><strong>Consistency:</strong> Maintaining regular updates and access in all market conditions.</li><li><strong>Clarity:</strong> Providing clear and concise key metrics.</li><li><strong>Credibility:</strong> Demonstrating deep industry expertise as an authoritative voice.</li><li><strong>Conduit:</strong> Functioning as a secure, two-way information network.</li></ul>" },
+                            { type: "mcq", prompt: "Which of the 5 Cs explicitly mandates that the IRO acts as a bidirectional channel between the market and the board?", options: ["Credibility", "Conduit", "Commitment"], answer: "Conduit", explain: "The Conduit principle requires IR to manage the two-way information flow between the company and its investors, rather than acting as a barrier." }
                         ]
                     }
                 ]
@@ -150,12 +159,11 @@
                 modules: [
                     {
                         id: "s2_m1",
-                        title: "2.1 Primary and Secondary Market Execution",
-                        desc: "The transaction ecosystem, execution lifecycle, quote vs order-driven venues, and dark pools.",
+                        title: "2.1 Primary vs Secondary Market Execution Architecture",
+                        desc: "Deconstructing the transaction lifecycle: execution, clearing, electronic settlement, and venue structures.",
                         steps: [
-                            { type: "text", title: "Market Execution Frameworks", html: "<p>Capital raising happens in primary markets, while subsequent trading occurs anonymously on secondary markets without financing the issuer. Execution transitions sequentially from agreement to central clearing house risk insulation, concluding with physical electronic settlement on a T+2 baseline.</p><h3>Trading Architecture:</h3><ul><li><strong>Quote-driven:</strong> Dependent on regulated market makers holding inventory on balance sheets.</li><li><strong>Order-driven:</strong> Directly matches matching entries on order books without counterparty inventory risk.</li><li><strong>Dark Pools:</strong> Venues offering hidden blocks to prevent severe market impact, restricted by MiFID II volume caps.</li></ul>" },
-                            { type: "mcq", prompt: "What is the standard electronic share settlement timeline on the London Stock Exchange?", options: ["T+1", "T+2", "T+3"], answer: "T+2", explain: "Settlement on the LSE is electronically finalized on a Trade Date plus 2 Business Days (T+2) horizon." }
-                        ]
+                            { type: "text", title: "Market Lifecycles & Infrastructures", html: "<p>Primary markets provide issuers with direct capital injection channels, whereas secondary markets facilitate subsequent liquidity discovery between market participants.</p><h3>The Three Stages of a Trade:</h3><ul><li><strong>Execution:</strong> The binding agreement of price and volume parameters between buyer and seller.</li><li><strong>Clearing:</strong> Trade reconciliation and risk management handled by a central counterparty.</li><li><strong>Settlement:</strong> The final exchange of cash for legal title, standardizing on a T+2 horizon.</li></ul>" },
+                            { type: "mcq", prompt: "What is the standard electronic settlement window for public equity transactions across major global stock exchanges?", options: ["T+1", "T+2", "T+5"], answer: "T+2", explain: "Transactions are finalized on a Trade Date plus 2 Business Days (T+2) cycle." }
                     }
                 ]
             },
@@ -165,11 +173,11 @@
                 modules: [
                     {
                         id: "s3_m1",
-                        title: "3.1 Corporate Structures & Share Capital Mechanics",
-                        desc: "Syllabus tracking of PLCs vs Ltds, share buybacks, and Section 793 share ownership investigations.",
+                        title: "3.1 Statutory Company Models & Shareholder Rights",
+                        desc: "PLCs vs Private Ltd structures, share capital parameters, pre-emption updates, and shareholder unmasking tools.",
                         steps: [
-                            { type: "text", title: "Statutory Capital Frameworks", html: "<p>Public Limited Companies (PLCs) require a minimum share capital of £50,000, 2 directors, and a qualified company secretary, unlike private Ltds.</p><h3>Section 793 Investigation Mechanics:</h3><p>Under CA 2006 s793, public entities have the explicit statutory power to look past multi-layered nominee accounts to discover ultimate beneficial owners. Recipients failing to reply are subject to court-enforced sanctions including voting restrictions and freezing of dividend distributions.</p>" },
-                            { type: "mcq", prompt: "What is the statutory minimum share capital requirement for a Public Limited Company in the UK?", options: ["£10,000", "£30,000", "£50,000"], answer: "£50,000", explain: "A PLC must maintain a minimum allotted share capital of £50,000 with each share at least 25% paid up." }
+                            { type: "text", title: "The Legal Framework of the Corporation", html: "<p>A Public Limited Company (PLC) requires a minimum share capital of £50,000, at least two directors, and a qualified company secretary to list publicly.</p><h3>Beneficial Owner Tracking:</h3><p>Under Section 793 of the Companies Act 2006, public companies have the power to look past multi-layered nominee accounts to discover ultimate beneficial owners. Shareholders who fail to comply face voting restrictions and frozen dividend distributions.</p>" },
+                            { type: "mcq", prompt: "What legal power enables a public company to look past multi-layered nominee structures to identify ultimate beneficial owners?", options: ["Section 793 of the Companies Act 2006", "Article 19 of the Market Abuse Regulation", "The MiFID II transparency framework"], answer: "Section 793 of the Companies Act 2006", explain: "Section 793 gives UK public companies the power to demand identity details from anyone holding voting rights in their stock." }
                         ]
                     }
                 ]
@@ -180,11 +188,11 @@
                 modules: [
                     {
                         id: "s4_m1",
-                        title: "4.1 Market Misconduct & Disclosure Duties",
-                        desc: "Precise boundaries of inside information, Article 19(11) closed periods, and major notifications.",
+                        title: "4.1 The Regulatory Enforcement Matrix & Inside Information",
+                        desc: "Deconstructing the definitions of price-sensitive inside information, closed periods, and major thresholds.",
                         steps: [
-                            { type: "text", title: "Insider Dealing and Transparency rules", html: "<p>Inside information is precise, unreleased data that a reasonable investor would use for investment mapping. MAR mandates a strict 30-day closed period before results where PDMRs are blocked from dealing.</p><h3>Major Shareholdings Disclosure:</h3><p>Shareholders must notify issuers when holdings pass certain percentage thresholds to prevent hidden accumulations of corporate control. In the UK, this notifiable threshold parameter initializes at 3%.</p>" },
-                            { type: "mcq", prompt: "What is the mandatory MAR closed period timeframe prior to half-year or preliminary year-end announcements?", options: ["14 Days", "30 Days", "60 Days"], answer: "30 Days", explain: "Article 19(11) of the Market Abuse Regulation enforces an absolute 30-day closed period for PDMR transactions." }
+                            { type: "text", title: "Navigating Inside Information Rules", html: "<p>Inside information is legally defined by four conditions: it must be precise, non-public, related to the issuer, and likely to have a significant effect on the share price if released.</p><h3>Strict Close Periods:</h3><p>Article 19(11) of the Market Abuse Regulation enforces a strict 30-day closed period prior to half-year or full-year earnings releases, during which insiders are blocked from trading.</p>" },
+                            { type: "mcq", prompt: "Under what conditions can a corporate issuer delay the public disclosure of inside information?", options: ["Only if immediate disclosure would prejudice its legitimate interests, the delay wouldn't mislead the public, and confidentiality can be guaranteed.", "Whenever immediate disclosure might cause a share price correction of more than 5%.", "If senior leadership requires additional time to structure consensus expectations."], answer: "Only if immediate disclosure would prejudice its legitimate interests, the delay wouldn't mislead the public, and confidentiality can be guaranteed.", explain: "Delaying disclosure is highly restricted and requires satisfying all three requirements to ensure market integrity." }
                         ]
                     }
                 ]
@@ -195,11 +203,11 @@
                 modules: [
                     {
                         id: "s5_m1",
-                        title: "5.1 Periodic Disclosures & Structured Formats",
-                        desc: "Mandatory vs voluntary timelines, Strategic Report components, ESEF digital tagging, and ESG disclosure standards.",
+                        title: "5.1 Periodic Reports & Reporting Formats",
+                        desc: "Timeline demands, Strategic Report disclosures, ESEF digital tagging formats, and ISSB sustainability standards.",
                         steps: [
-                            { type: "text", title: "The Periodic Corporate Reporting Suite", html: "<p>Listed companies utilize a highly structured reporting cycle to communicate financial performance and operational updates. Reports are strictly governed by regulatory deadlines calculated from the close of the reporting period.</p><h3>Mandatory Components & Formats:</h3><ul><li><strong>Strategic Report:</strong> The primary forward-looking vehicle presenting a fair review of the business, its business model, KPIs, and principal risks.</li><li><strong>Digital ESEF Tagging:</strong> Reports must be issued in structured electronic format using inline XBRL tags to facilitate efficient data extraction by analysts.</li><li><strong>Sustainability Standards:</strong> Transitioning behind the International Sustainability Standards Board (ISSB) frameworks (IFRS S1 & S2) to introduce a global baseline for climate-related financial exposures.</li></ul>" },
-                            { type: "mcq", prompt: "Under current listing transparency directives, within what timeframe following the financial year-end must an annual report be published?", options: ["3 Months", "4 Months", "6 Months"], answer: "4 Months", explain: "Directives mandate that an entity's complete audited annual report must be made public within 4 months of the year-end." }
+                            { type: "text", title: "The Corporate Reporting Matrix", html: "<p>Listed companies operate on a structured disclosure calendar, delivering mandatory half-year and preliminary annual financial reviews.</p><h3>Key Structural Requirements:</h3><ul><li><strong>Strategic Report:</strong> A forward-looking document outlining the business model, KPIs, and principal risk exposures.</li><li><strong>ESEF Tagging:</strong> Reports must use inline XBRL tags to allow automated parsing by analysts.</li><li><strong>ISSB Guidelines:</strong> Implementing IFRS S1 and S2 parameters to provide a global baseline for sustainability reporting.</li></ul>" },
+                            { type: "mcq", prompt: "What digital formatting framework is mandatory for annual financial statements to enable automated parsing by analysts?", options: ["Inline XBRL under ESEF guidelines", "Standard text files via FTP nodes", "Encrypted PDF records"], answer: "Inline XBRL under ESEF guidelines", explain: "European and UK listing rules require inline XBRL digital tagging within XHTML files under ESEF specifications." }
                         ]
                     }
                 ]
@@ -210,11 +218,11 @@
                 modules: [
                     {
                         id: "s6_m1",
-                        title: "6.1 Financial Statements, Ratios, and Valuation Metrics",
-                        desc: "Deep tracking of Balance Sheets, Cash Flows, Profit vs Cash, Liquidity/Solvency ratios, WACC, and CAPM calculations.",
+                        title: "6.1 Financial Statements, Key Ratios & Corporate Valuation",
+                        desc: "Balance Sheet tracking, cash flow dynamics, profit vs cash, liquidity metrics, WACC hurdles, and CAPM mechanics.",
                         steps: [
-                            { type: "text", title: "The Mechanics of Corporate Finance", html: "<p>Financial statements give information on profitability, cash flow, and capital structure. Profitability numbers utilize accrual matching conventions, making them structurally distinct from cash flows.</p><h3>Essential Financial Frameworks:</h3><ul><li><strong>Liquidity (Current Ratio):</strong> Current Assets / Current Liabilities.</li><li><strong>Solvency (Gearing):</strong> Debt / Capital Employed, tracking the risk structure of capital allocation.</li><li><strong>WACC:</strong> Evaluates the combined post-tax hurdle rate of debt and equity funding blocks.</li><li><strong>CAPM Formula:</strong> $R = R_f + \\beta \\times (R_m - R_f)$, outlining the required rate of return for an asset based on its market risk." },
-                            { type: "mcq", prompt: "If a company presents Current Assets of £200 and Current Liabilities of £125, what is its exact Current Ratio?", options: ["1.2", "1.6", "2.0"], answer: "1.6", explain: "The current liquidity ratio is computed as £200 divided by £125, matching an output profile of 1.6." }
+                            { type: "text", title: "The Fundamentals of Financial Analysis", html: "<p>Financial statements provide the data required to calculate corporate health, using matching and accrual conventions that separate accounting profit from cash generation.</p><h3>Essential Calculation Tools:</h3><ul><li><strong>Current Ratio:</strong> Current Assets divided by Current Liabilities, tracking short-term liquidity.</li><li><strong>Gearing:</strong> Debt divided by Capital Employed, tracking leverage structure risk.</li><li><strong>CAPM Cost of Equity:</strong> Calculated as risk-free rate plus Beta multiplied by the equity risk premium.</li></ul>" },
+                            { type: "mcq", prompt: "If an enterprise records current assets of £300,000 and current liabilities of £150,000, what is its exact current ratio?", options: ["1.5", "2.0", "2.5"], answer: "2.0", explain: "The current liquidity ratio is calculated as £300,000 divided by £150,000, which equals 2.0." }
                         ]
                     }
                 ]
@@ -225,11 +233,11 @@
                 modules: [
                     {
                         id: "s7_m1",
-                        title: "7.1 Execution of the Practical IR Lifecycle",
-                        desc: "Managing the annual calendar, results day, consensus models, perception studies, and investor targeting techniques.",
+                        title: "7.1 Practical IR Execution Lifecycles",
+                        desc: "Managing results day calendars, market consensus models, investor targeting methods, and crisis communication rules.",
                         steps: [
-                            { type: "text", title: "Real-World IR Operations", html: "<p>Practical investor relations combines corporate strategy with rigorous operational event execution throughout the financial year.</p><h3>Core Operational Domains:</h3><ul><li><strong>Consensus Management:</strong> Aggregating and tracking all published sell-side models to calculate the mean expectation, ensuring no material deviation exists vs internal budgets.</li><li><strong>Shareholder Profiling:</strong> Utilizing electronic nominee unpicking to track buy-side investment styles (Growth, Value, GARP).</li><li><strong>Crisis Control:</strong> Deploying structured, fact-checked holding statements to stabilize market sentiment when unforeseen events hit.</li></ul>" },
-                            { type: "mcq", prompt: "What term describes the arithmetic mean of all earnings and revenue forecasts published by equity research analysts covering a stock?", options: ["Internal Budget", "Market Consensus", "The Valuation Multiple"], answer: "Market Consensus", explain: "Market consensus provides the unique publicly available average expectation track on which a company's trading value is based." }
+                            { type: "text", title: "The Operational Realities of the IRO", html: "<p>Practical investor relations maps corporate strategy directly to the rhythms of the financial calendar.</p><h3>Core Operational Areas:</h3><ul><li><strong>Consensus Aggregation:</strong> Collecting and tracking sell-side analysts' financial models to monitor market expectations.</li><li><strong>Targeting Matrix:</strong> Identifying institutional managers whose investment styles match the company's growth profile.</li><li><strong>Crisis Communications:</strong> Deploying fact-checked statements quickly to stabilize market sentiment during unexpected events.</li></ul>" },
+                            { type: "mcq", prompt: "What term describes the arithmetic mean of all published earnings and revenue forecasts by covering sell-side analysts?", options: ["Market Consensus", "Internal Run Rate", "Target Multiple Valuation"], answer: "Market Consensus", explain: "Market consensus represents the compiled average expectation track used by the market to evaluate operational performance." }
                         ]
                     }
                 ]
