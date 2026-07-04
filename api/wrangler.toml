@@ -1,4 +1,4 @@
-name = "irstreak-api"
+name = "irstreak"
 main = "src/index.js"
 compatibility_date = "2026-07-04"
 
