@@ -41,7 +41,7 @@
 
         async function loadSyllabus() {
             try {
-                const response = await fetch(`${API_URL}/api/syllabus`);
+                const response = await fetch("https://irstreak.dvwillett.workers.dev/api/syllabus");
                 if (!response.ok) throw new Error("Failed to fetch syllabus");
                 const rawSteps = await response.json();
                 
