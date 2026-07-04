@@ -2,28 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IRStreak Academy</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; padding: 40px; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .module-card { border: 2px solid #e5e5e5; padding: 20px; margin: 10px 0; border-radius: 8px; cursor: pointer; }
-        .module-card:hover { border-color: #1cb0f6; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4f7f6; padding: 20px; line-height: 1.6; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .module-card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .module-card:hover { border-color: #007bff; background: #f0f7ff; }
         .screen { display: none; }
         .screen.active { display: block; }
-        .footer-btn { background: #1cb0f6; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+        .option-item { display: block; width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; text-align: left; }
+        .option-item:hover { background: #eef; }
     </style>
 </head>
 <body>
     <div class="container">
         <div id="dashboard-screen" class="screen active">
-            <h1>ICIR Study Academy</h1>
-            <p id="status">Loading syllabus from database...</p>
+            <h1>IRStreak Academy</h1>
+            <p id="status">Loading comprehensive study program...</p>
             <div id="curriculum-tree-root"></div>
         </div>
+
         <div id="lesson-screen" class="screen">
             <div id="runtime-content-pane"></div>
-            <button class="footer-btn" id="runtime-action-btn" onclick="handleStepTransition()">Continue</button>
+            <button class="footer-btn" id="runtime-action-btn" onclick="handleStepTransition()">Next</button>
+            <button onclick="document.location.reload()">Back to Dashboard</button>
         </div>
     </div>
 
@@ -37,26 +40,27 @@
         async function loadSyllabusFromD1() {
             try {
                 const response = await fetch(`${WORKER_URL}/api/syllabus`);
-                if (!response.ok) throw new Error("Database empty or API error");
+                if (!response.ok) throw new Error("API call failed");
                 const rawSteps = await response.json();
                 
-                if (rawSteps.length === 0) {
-                    document.getElementById("status").innerText = "Database is empty. Please execute the INSERT SQL scripts in your D1 console.";
-                    return;
-                }
-
                 let sectionMap = {};
                 rawSteps.forEach(step => {
                     if (!sectionMap[step.section]) sectionMap[step.section] = { title: step.section, modules: {} };
                     if (!sectionMap[step.section].modules[step.id]) {
                         sectionMap[step.section].modules[step.id] = { id: step.id, title: step.module_title, steps: [] };
                     }
-                    sectionMap[step.section].modules[step.id].steps.push({ ...step, options: step.options ? JSON.parse(step.options) : [] });
+                    
+                    let parsedOptions = [];
+                    try {
+                        parsedOptions = step.options ? JSON.parse(step.options) : [];
+                    } catch(e) { parsedOptions = [step.options]; }
+
+                    sectionMap[step.section].modules[step.id].steps.push({ ...step, options: parsedOptions });
                 });
 
                 masterCurriculum = Object.values(sectionMap).map(s => ({ title: s.title, modules: Object.values(s.modules) }));
                 renderDashboard();
-                document.getElementById("status").innerText = "Curriculum loaded successfully.";
+                document.getElementById("status").innerText = "Program loaded successfully.";
             } catch (e) {
                 document.getElementById("status").innerText = "Error: " + e.message;
             }
@@ -64,6 +68,7 @@
 
         function renderDashboard() {
             const root = document.getElementById("curriculum-tree-root");
+            root.innerHTML = "";
             masterCurriculum.forEach(sec => {
                 root.innerHTML += `<h3>${sec.title}</h3>`;
                 sec.modules.forEach(mod => {
@@ -84,9 +89,15 @@
             const step = runtime.activeModule.steps[runtime.activeStepIndex];
             const pane = document.getElementById("runtime-content-pane");
             pane.innerHTML = `<h2>${step.title}</h2><p>${step.body_content || ''}</p>`;
+            
             if (step.step_type === 'mcq') {
-                pane.innerHTML += `<h3>${step.prompt}</h3>` + step.options.map(o => `<button class="option-item">${o}</button>`).join('<br>');
+                pane.innerHTML += `<h3>${step.prompt}</h3>` + 
+                    step.options.map(o => `<button class="option-item" onclick="checkAnswer('${o}', '${step.answer}')">${o}</button>`).join('');
             }
+        }
+
+        function checkAnswer(selected, correct) {
+            alert(selected === correct ? "Correct!" : "Incorrect. The answer was: " + correct);
         }
 
         function handleStepTransition() {
