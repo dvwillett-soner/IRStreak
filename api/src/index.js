@@ -1,19 +1,19 @@
 export default {
   async fetch(request, env) {
-    // 1. Handle CORS Preflight (OPTIONS request)
+    const url = new URL(request.url);
+
+    // 1. Handle CORS Preflight
     if (request.method === "OPTIONS") {
       return new Response(null, {
         headers: {
-          "Access-Control-Allow-Origin": "https://irstreak.pages.dev", // Replace with your frontend URL
+          "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Methods": "GET, OPTIONS",
           "Access-Control-Allow-Headers": "Content-Type",
         },
       });
     }
 
-    const url = new URL(request.url);
-
-    // 2. API Logic
+    // 2. API Route for Database
     if (url.pathname === "/api/syllabus") {
       try {
         const { results } = await env.DB.prepare(
@@ -23,18 +23,18 @@ export default {
         return new Response(JSON.stringify(results), {
           headers: {
             "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "https://irstreak.pages.dev", // Replace with your frontend URL
+            "Access-Control-Allow-Origin": "*",
           },
         });
       } catch (err) {
         return new Response(JSON.stringify({ error: err.message }), {
           status: 500,
-          headers: { "Access-Control-Allow-Origin": "https://irstreak.pages.dev" },
+          headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
         });
       }
     }
 
-    // 3. Default for unknown routes
+    // 3. Fallback for unknown paths
     return new Response("Not Found", { status: 404 });
   }
 };
